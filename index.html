@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>브레인라이팅 마인드맵</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+    <style>
+        :root {
+            --bg-canvas: #f4f5f8;
+            --bg-node: #ffffff;
+            --bg-integration: #1e293b;
+            --text-main: #0f172a;
+            --text-sub: #64748b;
+            --line-color: #94a3b8;
+            --border-color: #e2e8f0;
+            --accent: #4f46e5;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard Variable', sans-serif;
+            background-color: var(--bg-canvas);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background-color: var(--bg-node);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+            z-index: 10;
+        }
+        .toolbar h1 {
+            margin: 0 auto 0 0;
+            font-size: 16px;
+            font-weight: 700;
+            color: #334155;
+            letter-spacing: -0.3px;
+        }
+        .btn {
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background-color: transparent;
+            border-radius: 6px;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.15s ease;
+            font-family: inherit;
+            color: #475569;
+        }
+        .btn:hover {
+            background-color: #f8fafc;
+            color: #0f172a;
+            border-color: #cbd5e1;
+        }
+        .btn-export {
+            background-color: #2563eb;
+            color: white;
+            border-color: #2563eb;
+            font-weight: 600;
+        }
+        .btn-export:hover {
+            background-color: #1d4ed8;
+            border-color: #1d4ed8;
+            color: white;
+        }
+        .zoom-text {
+            font-size: 13px;
+            font-weight: 600;
+            width: 44px;
+            text-align: center;
+            color: var(--text-sub);
+        }
+
+        #viewport {
+            flex: 1;
+            overflow: auto;
+            padding: 40px;
+        }
+        #canvas {
+            display: inline-flex;
+            flex-direction: column;
+            gap: 60px;
+            transform-origin: 0 0;
+            transition: transform 0.1s;
+            padding: 20px 100px 100px 20px;
+            min-width: max-content;
+            min-height: max-content;
+        }
+
+        .branch {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            position: relative;
+            margin: 10px 0;
+        }
+        .children-wrapper {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-left: 30px;
+            position: relative;
+        }
+        .children-wrapper::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 50%;
+            width: 30px;
+            height: 2px;
+            background: var(--line-color);
+        }
+        .children-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-left: 2px solid var(--line-color);
+            padding-left: 30px;
+            position: relative;
+        }
+        .children-column > .branch::before, .children-column > .converge-group::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 50%;
+            width: 30px;
+            height: 2px;
+            background: var(--line-color);
+        }
+
+        .converge-group {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            position: relative;
+            margin: 10px 0;
+        }
+        .converge-children {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-right: 2px solid var(--line-color);
+            padding-left: 30px;
+            position: relative;
+            align-items: stretch;
+        }
+        .converge-children > .branch::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 50%;
+            width: 30px;
+            height: 2px;
+            background: var(--line-color);
+        }
+        .converge-children > .branch::after {
+            content: '';
+            flex-grow: 1;
+            height: 2px;
+            background: var(--line-color);
+            min-width: 30px;
+        }
+        .integration-wrapper {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-left: 30px;
+            position: relative;
+        }
+        .integration-wrapper::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 50%;
+            width: 30px;
+            height: 2px;
+            background: var(--line-color);
+        }
+
+        .node-card {
+            width: 260px;
+            background-color: var(--bg-node);
+            flex-shrink: 0;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 18px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            position: relative;
+            z-index: 2;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .node-card:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+        }
+        .node-card.type-integration {
+            background-color: var(--bg-integration);
+            border-color: var(--bg-integration);
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .node-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .type-integration .node-header {
+            border-bottom-color: #334155;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+        .node-checkbox {
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+            accent-color: var(--accent);
+            margin: 0;
+        }
+        .category-select, .custom-category {
+            border: none;
+            background: transparent;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-sub);
+            outline: none;
+            font-family: inherit;
+            width: 80%;
+            cursor: pointer;
+        }
+        .custom-category {
+            border-bottom: 1px dashed var(--line-color);
+            padding-bottom: 2px;
+            cursor: text;
+        }
+        .type-integration .category-label {
+            color: #e2e8f0;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 2px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .node-card:hover .header-controls {
+            opacity: 1;
+        }
+        .btn-ctrl {
+            background: none;
+            border: none;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 4px;
+            color: var(--text-sub);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+        }
+        .btn-ctrl:hover {
+            background: #f1f5f9;
+            color: var(--text-main);
+        }
+        .btn-delete {
+            color: #ef4444;
+        }
+        .btn-delete:hover {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .node-content {
+            min-height: 48px;
+            outline: none;
+            font-size: 14px;
+            line-height: 1.6;
+            word-break: break-word;
+            color: #334155;
+        }
+        .node-content:empty:before {
+            content: attr(data-placeholder);
+            color: #94a3b8;
+            pointer-events: none;
+        }
+        .type-integration .node-content {
+            color: #f8fafc;
+        }
+        .type-integration .node-content:empty:before {
+            color: #64748b;
+        }
+
+        .action-group {
+            margin-top: 16px;
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .btn-add-child {
+            flex: 1;
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            color: #475569;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-add-child:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+            border-color: #cbd5e1;
+        }
+        
+        .btn-integrate {
+            display: none;
+            width: 100%;
+            background: var(--accent);
+            color: white;
+            border: none;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-integrate:hover {
+            background: #4338ca;
+        }
+
+        body.exporting .hide-on-export { display: none !important; }
+        body.exporting .node-header { border-bottom-color: transparent; padding-bottom: 4px; }
+        body.exporting .action-group { display: none !important; }
+        body.exporting .node-card { border-color: transparent; box-shadow: none; background-color: transparent; }
+        body.exporting .type-integration { background-color: var(--bg-integration); border-color: var(--bg-integration); border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="toolbar hide-on-export">
+        <h1>브레인라이팅 마인드맵</h1>
+        <button class="btn" onclick="addRoot()">+ 새 주제 추가</button>
+        <div style="flex:1;"></div>
+        <button class="btn" onclick="changeZoom(-0.1)">- 축소</button>
+        <span class="zoom-text" id="zoom-text">100%</span>
+        <button class="btn" onclick="changeZoom(0.1)">+ 확대</button>
+        <button class="btn" onclick="resetZoom()">1:1 배열</button>
+        <button class="btn btn-export" onclick="exportToImage()">이미지로 저장</button>
+    </div>
+
+    <div id="viewport">
+        <div id="canvas"></div>
+    </div>
+
+    <script>
+        let currentZoom = 1;
+        const canvas = document.getElementById('canvas');
+        const zoomText = document.getElementById('zoom-text');
+
+        function changeZoom(delta) {
+            currentZoom = Math.max(0.3, Math.min(2.0, currentZoom + delta));
+            canvas.style.transform = `scale(${currentZoom})`;
+            zoomText.innerText = `${Math.round(currentZoom * 100)}%`;
+        }
+        
+        function resetZoom() {
+            currentZoom = 1;
+            canvas.style.transform = `scale(1)`;
+            zoomText.innerText = `100%`;
+        }
+
+        function handleCategoryChange(selectElem) {
+            const customInput = selectElem.nextElementSibling;
+            if (selectElem.value === 'custom') {
+                selectElem.style.display = 'none';
+                customInput.style.display = 'inline-block';
+                customInput.focus();
+            }
+        }
+
+        function handleSelection(checkbox) {
+            const childrenColumn = checkbox.closest('.children-column');
+            if (!childrenColumn) return;
+            
+            const parentWrapper = childrenColumn.closest('.children-wrapper');
+            const parentCard = parentWrapper.previousElementSibling;
+            const integrateBtn = parentCard.querySelector('.btn-integrate');
+            
+            const checkedCount = childrenColumn.querySelectorAll(':scope > .branch > .node-card .node-checkbox:checked').length;
+            
+            if (integrateBtn) {
+                integrateBtn.style.display = checkedCount >= 2 ? 'block' : 'none';
+                integrateBtn.innerText = `선택한 ${checkedCount}개 항목 통합`;
+            }
+        }
+
+        function createNodeTemplate(type = 'normal', isRoot = false) {
+            const isIntegration = type === 'integration';
+            const cardClass = isIntegration ? 'node-card type-integration' : 'node-card';
+            
+            const headerHTML = isIntegration 
+                ? `<span class="category-label">통합/발전 아이디어</span>`
+                : `<input type="checkbox" class="node-checkbox hide-on-export" title="통합할 항목 선택" onchange="handleSelection(this)" ${isRoot ? 'style="display:none;"' : ''}>
+                   <select class="category-select" onchange="handleCategoryChange(this)">
+                        <option value="주제" ${isRoot ? 'selected' : ''}>주제 / 안건</option>
+                        <option value="아이디어" ${!isRoot ? 'selected' : ''}>아이디어</option>
+                        <option value="파생 아이디어">파생 아이디어</option>
+                        <option value="custom">직접 입력...</option>
+                   </select>
+                   <input type="text" class="custom-category" style="display:none;" placeholder="분류명 직접 입력">`;
+
+            const placeholderText = isIntegration 
+                ? '수렴된 아이디어를 바탕으로 발전된 내용을 작성하세요.' 
+                : '내용을 작성하세요.';
+
+            const branchDiv = document.createElement('div');
+            branchDiv.className = 'branch';
+            
+            branchDiv.innerHTML = `
+                <div class="${cardClass}">
+                    <div class="node-header">
+                        <div class="header-left">${headerHTML}</div>
+                        <div class="header-controls hide-on-export">
+                            <button class="btn-ctrl" onclick="moveNode(this, -1)" title="위로 이동">▲</button>
+                            <button class="btn-ctrl" onclick="moveNode(this, 1)" title="아래로 이동">▼</button>
+                            <button class="btn-ctrl btn-delete" onclick="deleteNode(this)" title="삭제">✕</button>
+                        </div>
+                    </div>
+                    <div class="node-content" contenteditable="true" data-placeholder="${placeholderText}"></div>
+                    ${!isIntegration ? `
+                    <div class="action-group hide-on-export">
+                        <button class="btn-add-child" onclick="addChildNode(this)">+ 하위 가지 추가</button>
+                        <button class="btn-integrate" onclick="integrateSelectedNodes(this)">선택 항목 통합</button>
+                    </div>` : ''}
+                </div>
+            `;
+            return branchDiv;
+        }
+
+        function addRoot() {
+            canvas.appendChild(createNodeTemplate('normal', true));
+        }
+
+        function addChildNode(btn) {
+            const card = btn.closest('.node-card');
+            const branch = card.parentElement;
+            
+            let childrenWrapper = branch.querySelector(':scope > .children-wrapper');
+            if (!childrenWrapper) {
+                childrenWrapper = document.createElement('div');
+                childrenWrapper.className = 'children-wrapper';
+                childrenWrapper.innerHTML = `<div class="children-column"></div>`;
+                branch.appendChild(childrenWrapper);
+            }
+            childrenWrapper.querySelector('.children-column').appendChild(createNodeTemplate('normal', false));
+        }
+
+        function integrateSelectedNodes(btn) {
+            const parentCard = btn.closest('.node-card');
+            const childrenWrapper = parentCard.nextElementSibling;
+            const childrenColumn = childrenWrapper.querySelector('.children-column');
+            
+            const checkedInputs = Array.from(childrenColumn.querySelectorAll(':scope > .branch > .node-card .node-checkbox:checked'));
+            if (checkedInputs.length < 2) return;
+
+            const branchesToMerge = checkedInputs.map(input => input.closest('.branch'));
+            
+            const convergeGroup = document.createElement('div');
+            convergeGroup.className = 'converge-group';
+            convergeGroup.innerHTML = `
+                <div class="converge-children"></div>
+                <div class="integration-wrapper"></div>
+            `;
+            
+            const convergeChildren = convergeGroup.querySelector('.converge-children');
+            branchesToMerge[0].before(convergeGroup);
+            
+            branchesToMerge.forEach(b => {
+                b.querySelector('.node-checkbox').checked = false;
+                convergeChildren.appendChild(b);
+            });
+            
+            const integrationWrapper = convergeGroup.querySelector('.integration-wrapper');
+            integrationWrapper.appendChild(createNodeTemplate('integration', false));
+            
+            btn.style.display = 'none';
+        }
+
+        function moveNode(btn, direction) {
+            const branch = btn.closest('.branch, .converge-group');
+            const parent = branch.parentElement;
+            
+            if (direction === -1 && branch.previousElementSibling) {
+                parent.insertBefore(branch, branch.previousElementSibling);
+            } else if (direction === 1 && branch.nextElementSibling) {
+                parent.insertBefore(branch.nextElementSibling, branch);
+            }
+        }
+
+        function deleteNode(btn) {
+            const card = btn.closest('.node-card');
+            const branch = card.parentElement;
+            const parent = branch.parentElement;
+
+            if (card.classList.contains('type-integration')) {
+                const convergeGroup = branch.closest('.converge-group');
+                const convergeChildren = convergeGroup.querySelector('.converge-children');
+                
+                while(convergeChildren.children.length > 0) {
+                    convergeGroup.before(convergeChildren.children[0]);
+                }
+                convergeGroup.remove();
+            } else {
+                if (parent.id === 'canvas') {
+                    branch.remove();
+                } else {
+                    branch.remove();
+                    if (parent.children.length === 0) {
+                        const wrapperToRemove = parent.closest('.children-wrapper, .converge-group');
+                        if (wrapperToRemove) wrapperToRemove.remove();
+                    }
+                }
+            }
+        }
+
+        function exportToImage() {
+            document.body.classList.add('exporting');
+            const originalZoom = currentZoom;
+            canvas.style.transform = `scale(1)`;
+            canvas.style.transition = 'none';
+
+            setTimeout(() => {
+                html2canvas(canvas, { scale: 2, backgroundColor: "#f4f5f8", logging: false }).then(rendered => {
+                    const link = document.createElement('a');
+                    link.download = 'brainwriting_export.png';
+                    link.href = rendered.toDataURL("image/png");
+                    link.click();
+                    
+                    currentZoom = originalZoom;
+                    canvas.style.transform = `scale(${currentZoom})`;
+                    canvas.style.transition = 'transform 0.1s';
+                    document.body.classList.remove('exporting');
+                });
+            }, 150);
+        }
+
+        window.onload = () => addRoot();
+    </script>
+</body>
+</html>
