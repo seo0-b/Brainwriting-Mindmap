@@ -3,107 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>브레인라이팅 보드</title>
+    <title>컴팩트 브레인라이팅 보드</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
     <style>
         :root {
-            --bg-canvas: #f4f5f8;
+            --bg-canvas: #f0f2f5;
             --bg-node: #ffffff;
             --bg-integration: #1e293b;
             --text-main: #0f172a;
-            --text-sub: #64748b;
+            --text-sub: #475569;
             --line-color: #94a3b8;
-            --border-color: #e2e8f0;
+            --border-color: #cbd5e1;
             --accent: #4f46e5;
+            
+        
+            --card-width: 200px;
+            --line-length: 20px;
         }
 
         body {
             margin: 0; padding: 0;
             font-family: 'Pretendard Variable', sans-serif;
-            background-color: var(--bg-canvas);
-            color: var(--text-main);
+            background-color: var(--bg-canvas); color: var(--text-main);
             height: 100vh; display: flex; flex-direction: column; overflow: hidden;
         }
 
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
+        
         .toolbar {
-            display: flex; align-items: center; gap: 8px;
-            padding: 12px 24px; background-color: var(--bg-node);
-            border-bottom: 1px solid var(--border-color);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.03); z-index: 10;
+            display: flex; align-items: center; gap: 8px; padding: 10px 20px;
+            background-color: var(--bg-node); border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05); z-index: 10;
         }
-        .toolbar h1 { margin: 0 auto 0 0; font-size: 16px; font-weight: 700; color: #334155; }
+        .toolbar h1 { margin: 0 auto 0 0; font-size: 15px; font-weight: 700; color: #1e293b; }
         .btn {
             cursor: pointer; border: 1px solid var(--border-color);
-            background-color: transparent; border-radius: 6px; padding: 6px 14px;
-            font-size: 13px; font-weight: 500; transition: all 0.15s ease; color: #475569;
+            background-color: transparent; border-radius: 4px; padding: 5px 10px;
+            font-size: 12px; font-weight: 600; transition: all 0.15s ease; color: #475569;
         }
-        .btn:hover { background-color: #f8fafc; color: #0f172a; border-color: #cbd5e1; }
-        .btn-export { background-color: #2563eb; color: white; border-color: #2563eb; font-weight: 600; }
+        .btn:hover { background-color: #f8fafc; color: #0f172a; border-color: #94a3b8; }
+        .btn-export { background-color: #2563eb; color: white; border-color: #2563eb; }
         .btn-export:hover { background-color: #1d4ed8; border-color: #1d4ed8; color: white; }
-        .zoom-text { font-size: 13px; font-weight: 600; width: 44px; text-align: center; color: var(--text-sub); }
+        .zoom-text { font-size: 12px; font-weight: 700; width: 40px; text-align: center; color: var(--text-sub); }
 
-        #viewport { flex: 1; overflow: auto; padding: 40px; }
+      
+        #viewport { flex: 1; overflow: auto; padding: 30px; }
         #canvas {
-            display: inline-flex; flex-direction: column; gap: 60px;
+            display: inline-flex; flex-direction: column; gap: 40px;
             transform-origin: 0 0; transition: transform 0.1s;
-            padding: 20px 100px 100px 20px; min-width: max-content; min-height: max-content;
+            padding: 20px 80px 80px 20px; min-width: max-content; min-height: max-content;
         }
 
-        .branch { display: flex; flex-direction: row; align-items: center; position: relative; margin: 10px 0; }
-        .children-wrapper { display: flex; flex-direction: row; align-items: center; margin-left: 30px; position: relative; }
-        .children-wrapper::before { content: ''; position: absolute; left: -30px; top: 50%; width: 30px; height: 2px; background: var(--line-color); }
-        .children-column { display: flex; flex-direction: column; justify-content: center; border-left: 2px solid var(--line-color); padding-left: 30px; position: relative; }
-        .children-column > .branch::before, .children-column > .converge-group::before { content: ''; position: absolute; left: -30px; top: 50%; width: 30px; height: 2px; background: var(--line-color); }
+        
+        .branch { display: flex; flex-direction: row; align-items: center; position: relative; margin: 6px 0; }
+        
+        .children-wrapper { display: flex; flex-direction: row; align-items: center; margin-left: var(--line-length); position: relative; }
+        .children-wrapper::before { content: ''; position: absolute; left: calc(var(--line-length) * -1); top: 50%; width: var(--line-length); height: 2px; background: var(--line-color); }
+        
+        .children-column { display: flex; flex-direction: column; justify-content: center; border-left: 2px solid var(--line-color); padding-left: var(--line-length); position: relative; }
+        .children-column > .branch::before, .children-column > .converge-group::before { content: ''; position: absolute; left: calc(var(--line-length) * -1); top: 50%; width: var(--line-length); height: 2px; background: var(--line-color); }
 
-        .converge-group { display: flex; flex-direction: row; align-items: center; position: relative; margin: 10px 0; }
-        .converge-children { display: flex; flex-direction: column; justify-content: center; border-right: 2px solid var(--line-color); padding-left: 30px; position: relative; align-items: stretch; }
-        .converge-children > .branch::before { content: ''; position: absolute; left: -30px; top: 50%; width: 30px; height: 2px; background: var(--line-color); }
-        .converge-children > .branch::after { content: ''; flex-grow: 1; height: 2px; background: var(--line-color); min-width: 30px; }
-        .integration-wrapper { display: flex; flex-direction: row; align-items: center; margin-left: 30px; position: relative; }
-        .integration-wrapper::before { content: ''; position: absolute; left: -30px; top: 50%; width: 30px; height: 2px; background: var(--line-color); }
+       
+        .converge-group { display: flex; flex-direction: row; align-items: center; position: relative; margin: 6px 0; }
+        .converge-children { display: flex; flex-direction: column; justify-content: center; border-right: 2px solid var(--line-color); padding-left: var(--line-length); position: relative; align-items: stretch; }
+        .converge-children > .branch::before { content: ''; position: absolute; left: calc(var(--line-length) * -1); top: 50%; width: var(--line-length); height: 2px; background: var(--line-color); }
+        .converge-children > .branch::after { content: ''; flex-grow: 1; height: 2px; background: var(--line-color); min-width: var(--line-length); }
+        
+        .integration-wrapper { display: flex; flex-direction: row; align-items: center; margin-left: var(--line-length); position: relative; }
+        .integration-wrapper::before { content: ''; position: absolute; left: calc(var(--line-length) * -1); top: 50%; width: var(--line-length); height: 2px; background: var(--line-color); }
 
+       
         .node-card {
-            width: 260px; background-color: var(--bg-node); flex-shrink: 0;
-            border: 1px solid var(--border-color); border-radius: 10px; padding: 18px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            position: relative; z-index: 2; transition: border-color 0.15s, box-shadow 0.15s;
+            width: var(--card-width); background-color: var(--bg-node); flex-shrink: 0;
+            border: 1px solid var(--border-color); border-radius: 6px; padding: 12px 14px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08); position: relative; z-index: 2; transition: border-color 0.15s;
         }
-        .node-card:hover { border-color: #cbd5e1; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025); }
-        .node-card.type-integration { background-color: var(--bg-integration); border-color: var(--bg-integration); color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .node-card:hover { border-color: #94a3b8; }
+        .node-card.type-integration { background-color: var(--bg-integration); border-color: var(--bg-integration); color: white; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
 
-        .node-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9; }
+        
+        .node-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid #f1f5f9; }
         .type-integration .node-header { border-bottom-color: #334155; }
         
-        .header-left { display: flex; align-items: center; gap: 8px; flex: 1; }
-        .node-checkbox { width: 14px; height: 14px; cursor: pointer; accent-color: var(--accent); margin: 0; }
-        .category-select, .custom-category { border: none; background: transparent; font-size: 13px; font-weight: 700; color: var(--text-sub); outline: none; font-family: inherit; width: 80%; cursor: pointer; }
-        .custom-category { border-bottom: 1px dashed var(--line-color); padding-bottom: 2px; cursor: text; }
-        .type-integration .category-label { color: #e2e8f0; font-size: 13px; font-weight: 700; }
+        .header-left { display: flex; align-items: center; gap: 6px; flex: 1; overflow: hidden; }
+        .node-checkbox { width: 12px; height: 12px; cursor: pointer; accent-color: var(--accent); margin: 0; flex-shrink: 0; }
+        
+        
+        .category-select, .custom-category {
+            border: none; background: transparent; font-size: 12px; font-weight: 700; color: var(--text-sub);
+            outline: none; font-family: inherit; width: 100%; cursor: pointer;
+            text-overflow: ellipsis; white-space: nowrap; overflow: hidden;
+        }
+        .custom-category { border-bottom: 1px dashed var(--line-color); padding-bottom: 1px; cursor: text; }
+        .type-integration .category-label { color: #e2e8f0; font-size: 12px; font-weight: 700; }
 
-        .header-controls { display: flex; gap: 2px; opacity: 0; transition: opacity 0.2s; }
+        .header-controls { display: flex; gap: 1px; opacity: 0; transition: opacity 0.2s; background: var(--bg-node); }
         .node-card:hover .header-controls { opacity: 1; }
-        .btn-ctrl { background: none; border: none; font-size: 12px; cursor: pointer; padding: 4px; color: var(--text-sub); border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+        .type-integration .header-controls { background: var(--bg-integration); }
+        .btn-ctrl { background: none; border: none; font-size: 11px; cursor: pointer; padding: 2px 4px; color: var(--text-sub); border-radius: 3px; display: flex; align-items: center; justify-content: center; }
         .btn-ctrl:hover { background: #f1f5f9; color: var(--text-main); }
+        .type-integration .btn-ctrl { color: #94a3b8; }
+        .type-integration .btn-ctrl:hover { background: #334155; color: white; }
         .btn-delete { color: #ef4444; }
         .btn-delete:hover { background: #fee2e2; color: #dc2626; }
 
-        .node-content { min-height: 48px; outline: none; font-size: 14px; line-height: 1.6; word-break: break-word; color: #334155; }
+        
+        .node-content { min-height: 36px; outline: none; font-size: 13px; line-height: 1.5; word-break: break-word; color: #1e293b; }
         .node-content:empty:before { content: attr(data-placeholder); color: #94a3b8; pointer-events: none; }
         .type-integration .node-content { color: #f8fafc; }
         .type-integration .node-content:empty:before { color: #64748b; }
 
-        .action-group { margin-top: 16px; display: flex; gap: 6px; flex-wrap: wrap; }
-        .btn-add-child { flex: 1; background: #f8fafc; border: 1px solid var(--border-color); color: #475569; font-size: 12px; font-weight: 600; padding: 8px; border-radius: 6px; cursor: pointer; transition: all 0.15s; }
-        .btn-add-child:hover { background: #f1f5f9; color: #0f172a; border-color: #cbd5e1; }
         
-        .btn-integrate { display: none; width: 100%; background: var(--accent); color: white; border: none; font-size: 12px; font-weight: 600; padding: 8px; border-radius: 6px; cursor: pointer; transition: all 0.15s; }
+        .action-group { margin-top: 10px; display: flex; gap: 4px; flex-wrap: wrap; }
+        .btn-add-child { flex: 1; background: #f8fafc; border: 1px solid var(--border-color); color: #475569; font-size: 11px; font-weight: 600; padding: 6px; border-radius: 4px; cursor: pointer; transition: 0.15s; }
+        .btn-add-child:hover { background: #e2e8f0; color: #0f172a; }
+        
+        .btn-integrate { display: none; width: 100%; background: var(--accent); color: white; border: none; font-size: 11px; font-weight: 600; padding: 6px; border-radius: 4px; cursor: pointer; transition: 0.15s; }
         .btn-integrate:hover { background: #4338ca; }
+
         
         body.exporting .hide-on-export { display: none !important; }
         body.exporting .action-group { display: none !important; }
@@ -112,7 +134,7 @@
 <body>
 
     <div class="toolbar hide-on-export">
-        <h1>브레인라이팅 캔버스</h1>
+        <h1>컴팩트 브레인라이팅 보드</h1>
         <button class="btn" onclick="addRoot()">+ 새 주제 추가</button>
         <div style="flex:1;"></div>
         <button class="btn" onclick="changeZoom(-0.1)">- 축소</button>
@@ -181,11 +203,9 @@
                         <option value="파생 아이디어">파생 아이디어</option>
                         <option value="custom">직접 입력...</option>
                    </select>
-                   <input type="text" class="custom-category" style="display:none;" placeholder="분류명 직접 입력">`;
+                   <input type="text" class="custom-category" style="display:none;" placeholder="직접 입력">`;
 
-            const placeholderText = isIntegration 
-                ? '수렴된 아이디어를 바탕으로 발전된 내용을 작성하세요.' 
-                : '내용을 작성하세요.';
+            const placeholderText = isIntegration ? '수렴된 아이디어 작성' : '내용 작성';
 
             const branchDiv = document.createElement('div');
             branchDiv.className = 'branch';
@@ -195,25 +215,23 @@
                     <div class="node-header">
                         <div class="header-left">${headerHTML}</div>
                         <div class="header-controls hide-on-export">
-                            <button class="btn-ctrl" onclick="moveNode(this, -1)" title="위로 이동">▲</button>
-                            <button class="btn-ctrl" onclick="moveNode(this, 1)" title="아래로 이동">▼</button>
+                            <button class="btn-ctrl" onclick="moveNode(this, -1)" title="위로">▲</button>
+                            <button class="btn-ctrl" onclick="moveNode(this, 1)" title="아래로">▼</button>
                             <button class="btn-ctrl btn-delete" onclick="deleteNode(this)" title="삭제">✕</button>
                         </div>
                     </div>
                     <div class="node-content" contenteditable="true" data-placeholder="${placeholderText}"></div>
                     ${!isIntegration ? `
                     <div class="action-group hide-on-export">
-                        <button class="btn-add-child" onclick="addChildNode(this)">+ 하위 가지 추가</button>
-                        <button class="btn-integrate" onclick="integrateSelectedNodes(this)">선택 항목 통합</button>
+                        <button class="btn-add-child" onclick="addChildNode(this)">+ 가지 추가</button>
+                        <button class="btn-integrate" onclick="integrateSelectedNodes(this)">통합</button>
                     </div>` : ''}
                 </div>
             `;
             return branchDiv;
         }
 
-        function addRoot() {
-            canvas.appendChild(createNodeTemplate('normal', true));
-        }
+        function addRoot() { canvas.appendChild(createNodeTemplate('normal', true)); }
 
         function addChildNode(btn) {
             const card = btn.closest('.node-card');
@@ -241,10 +259,7 @@
             
             const convergeGroup = document.createElement('div');
             convergeGroup.className = 'converge-group';
-            convergeGroup.innerHTML = `
-                <div class="converge-children"></div>
-                <div class="integration-wrapper"></div>
-            `;
+            convergeGroup.innerHTML = `<div class="converge-children"></div><div class="integration-wrapper"></div>`;
             
             const convergeChildren = convergeGroup.querySelector('.converge-children');
             branchesToMerge[0].before(convergeGroup);
@@ -263,12 +278,8 @@
         function moveNode(btn, direction) {
             const branch = btn.closest('.branch, .converge-group');
             const parent = branch.parentElement;
-            
-            if (direction === -1 && branch.previousElementSibling) {
-                parent.insertBefore(branch, branch.previousElementSibling);
-            } else if (direction === 1 && branch.nextElementSibling) {
-                parent.insertBefore(branch.nextElementSibling, branch);
-            }
+            if (direction === -1 && branch.previousElementSibling) parent.insertBefore(branch, branch.previousElementSibling);
+            else if (direction === 1 && branch.nextElementSibling) parent.insertBefore(branch.nextElementSibling, branch);
         }
 
         function deleteNode(btn) {
@@ -279,15 +290,11 @@
             if (card.classList.contains('type-integration')) {
                 const convergeGroup = branch.closest('.converge-group');
                 const convergeChildren = convergeGroup.querySelector('.converge-children');
-                
-                while(convergeChildren.children.length > 0) {
-                    convergeGroup.before(convergeChildren.children[0]);
-                }
+                while(convergeChildren.children.length > 0) convergeGroup.before(convergeChildren.children[0]);
                 convergeGroup.remove();
             } else {
-                if (parent.id === 'canvas') {
-                    branch.remove();
-                } else {
+                if (parent.id === 'canvas') branch.remove();
+                else {
                     branch.remove();
                     if (parent.children.length === 0) {
                         const wrapperToRemove = parent.closest('.children-wrapper, .converge-group');
@@ -297,20 +304,27 @@
             }
         }
 
+        
         function exportToImage() {
             document.body.classList.add('exporting');
             const originalZoom = currentZoom;
             canvas.style.transform = `scale(1)`;
             canvas.style.transition = 'none';
 
+            
             const selects = document.querySelectorAll('.category-select');
             selects.forEach(sel => {
                 if (sel.style.display !== 'none') {
                     const span = document.createElement('span');
                     span.className = 'temp-export-label';
-                    span.style.fontSize = '13px';
+                    span.style.fontSize = '12px';
                     span.style.fontWeight = '700';
-                    span.style.color = '#64748b';
+                    span.style.color = '#475569';
+                    span.style.display = 'inline-block';
+                    span.style.maxWidth = '100%';
+                    span.style.overflow = 'hidden';
+                    span.style.textOverflow = 'ellipsis';
+                    span.style.whiteSpace = 'nowrap';
                     span.innerText = sel.options[sel.selectedIndex].text;
                     sel.parentNode.insertBefore(span, sel);
                     sel.dataset.exportHidden = 'true';
@@ -323,30 +337,41 @@
                 if (input.style.display !== 'none') {
                     const span = document.createElement('span');
                     span.className = 'temp-export-label';
-                    span.style.fontSize = '13px';
+                    span.style.fontSize = '12px';
                     span.style.fontWeight = '700';
-                    span.style.color = '#64748b';
+                    span.style.color = '#475569';
+                    span.style.display = 'inline-block';
+                    span.style.maxWidth = '100%';
+                    span.style.overflow = 'hidden';
+                    span.style.textOverflow = 'ellipsis';
+                    span.style.whiteSpace = 'nowrap';
                     span.innerText = input.value || input.placeholder;
                     span.style.borderBottom = '1px dashed #94a3b8';
-                    span.style.paddingBottom = '2px';
+                    span.style.paddingBottom = '1px';
                     input.parentNode.insertBefore(span, input);
                     input.dataset.exportHidden = 'true';
                     input.style.display = 'none';
                 }
             });
 
+            
             setTimeout(() => {
-                html2canvas(canvas, { scale: 2, backgroundColor: "#f4f5f8", logging: false }).then(rendered => {
+                html2canvas(canvas, { 
+                    scale: 2, 
+                    backgroundColor: "#f0f2f5", 
+                    logging: false,
+                    useCORS: true
+                }).then(rendered => {
                     const link = document.createElement('a');
-                    link.download = 'brainwriting_export.png';
+                    link.download = 'compact_brainwriting.png';
                     link.href = rendered.toDataURL("image/png");
                     link.click();
                     
-                    // 줌 복구
+                    
                     currentZoom = originalZoom;
                     canvas.style.transform = `scale(${currentZoom})`;
                     canvas.style.transition = 'transform 0.1s';
-            
+                    
                     document.querySelectorAll('.temp-export-label').forEach(span => span.remove());
                     document.querySelectorAll('[data-export-hidden="true"]').forEach(el => {
                         el.style.display = el.tagName === 'SELECT' ? 'inline-block' : 'inline-block';
@@ -355,7 +380,7 @@
                     
                     document.body.classList.remove('exporting');
                 });
-            }, 150);
+            }, 300);
         }
 
         window.onload = () => addRoot();
