@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>브레인라이팅 마인드맵</title>
+    <title>브레인라이팅 보드</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
     <style>
@@ -19,368 +19,100 @@
         }
 
         body {
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             font-family: 'Pretendard Variable', sans-serif;
             background-color: var(--bg-canvas);
             color: var(--text-main);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            height: 100vh; display: flex; flex-direction: column; overflow: hidden;
         }
 
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
         .toolbar {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 24px;
-            background-color: var(--bg-node);
+            display: flex; align-items: center; gap: 8px;
+            padding: 12px 24px; background-color: var(--bg-node);
             border-bottom: 1px solid var(--border-color);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-            z-index: 10;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03); z-index: 10;
         }
-        .toolbar h1 {
-            margin: 0 auto 0 0;
-            font-size: 16px;
-            font-weight: 700;
-            color: #334155;
-            letter-spacing: -0.3px;
-        }
+        .toolbar h1 { margin: 0 auto 0 0; font-size: 16px; font-weight: 700; color: #334155; }
         .btn {
-            cursor: pointer;
-            border: 1px solid var(--border-color);
-            background-color: transparent;
-            border-radius: 6px;
-            padding: 6px 14px;
-            font-size: 13px;
-            font-weight: 500;
-            transition: all 0.15s ease;
-            font-family: inherit;
-            color: #475569;
+            cursor: pointer; border: 1px solid var(--border-color);
+            background-color: transparent; border-radius: 6px; padding: 6px 14px;
+            font-size: 13px; font-weight: 500; transition: all 0.15s ease; color: #475569;
         }
-        .btn:hover {
-            background-color: #f8fafc;
-            color: #0f172a;
-            border-color: #cbd5e1;
-        }
-        .btn-export {
-            background-color: #2563eb;
-            color: white;
-            border-color: #2563eb;
-            font-weight: 600;
-        }
-        .btn-export:hover {
-            background-color: #1d4ed8;
-            border-color: #1d4ed8;
-            color: white;
-        }
-        .zoom-text {
-            font-size: 13px;
-            font-weight: 600;
-            width: 44px;
-            text-align: center;
-            color: var(--text-sub);
-        }
+        .btn:hover { background-color: #f8fafc; color: #0f172a; border-color: #cbd5e1; }
+        .btn-export { background-color: #2563eb; color: white; border-color: #2563eb; font-weight: 600; }
+        .btn-export:hover { background-color: #1d4ed8; border-color: #1d4ed8; color: white; }
+        .zoom-text { font-size: 13px; font-weight: 600; width: 44px; text-align: center; color: var(--text-sub); }
 
-        #viewport {
-            flex: 1;
-            overflow: auto;
-            padding: 40px;
-        }
+        #viewport { flex: 1; overflow: auto; padding: 40px; }
         #canvas {
-            display: inline-flex;
-            flex-direction: column;
-            gap: 60px;
-            transform-origin: 0 0;
-            transition: transform 0.1s;
-            padding: 20px 100px 100px 20px;
-            min-width: max-content;
-            min-height: max-content;
+            display: inline-flex; flex-direction: column; gap: 60px;
+            transform-origin: 0 0; transition: transform 0.1s;
+            padding: 20px 100px 100px 20px; min-width: max-content; min-height: max-content;
         }
 
-        .branch {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            position: relative;
-            margin: 10px 0;
-        }
-        .children-wrapper {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            margin-left: 30px;
-            position: relative;
-        }
-        .children-wrapper::before {
-            content: '';
-            position: absolute;
-            left: -30px;
-            top: 50%;
-            width: 30px;
-            height: 2px;
-            background: var(--line-color);
-        }
-        .children-column {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            border-left: 2px solid var(--line-color);
-            padding-left: 30px;
-            position: relative;
-        }
-        .children-column > .branch::before, .children-column > .converge-group::before {
-            content: '';
-            position: absolute;
-            left: -30px;
-            top: 50%;
-            width: 30px;
-            height: 2px;
-            background: var(--line-color);
-        }
+        .branch { display: flex; flex-direction: row; align-items: center; position: relative; margin: 10px 0; }
+        .children-wrapper { display: flex; flex-direction: row; align-items: center; margin-left: 30px; position: relative; }
+        .children-wrapper::before { content: ''; position: absolute; left: -30px; top: 50%; width: 30px; height: 2px; background: var(--line-color); }
+        .children-column { display: flex; flex-direction: column; justify-content: center; border-left: 2px solid var(--line-color); padding-left: 30px; position: relative; }
+        .children-column > .branch::before, .children-column > .converge-group::before { content: ''; position: absolute; left: -30px; top: 50%; width: 30px; height: 2px; background: var(--line-color); }
 
-        .converge-group {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            position: relative;
-            margin: 10px 0;
-        }
-        .converge-children {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            border-right: 2px solid var(--line-color);
-            padding-left: 30px;
-            position: relative;
-            align-items: stretch;
-        }
-        .converge-children > .branch::before {
-            content: '';
-            position: absolute;
-            left: -30px;
-            top: 50%;
-            width: 30px;
-            height: 2px;
-            background: var(--line-color);
-        }
-        .converge-children > .branch::after {
-            content: '';
-            flex-grow: 1;
-            height: 2px;
-            background: var(--line-color);
-            min-width: 30px;
-        }
-        .integration-wrapper {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            margin-left: 30px;
-            position: relative;
-        }
-        .integration-wrapper::before {
-            content: '';
-            position: absolute;
-            left: -30px;
-            top: 50%;
-            width: 30px;
-            height: 2px;
-            background: var(--line-color);
-        }
+        .converge-group { display: flex; flex-direction: row; align-items: center; position: relative; margin: 10px 0; }
+        .converge-children { display: flex; flex-direction: column; justify-content: center; border-right: 2px solid var(--line-color); padding-left: 30px; position: relative; align-items: stretch; }
+        .converge-children > .branch::before { content: ''; position: absolute; left: -30px; top: 50%; width: 30px; height: 2px; background: var(--line-color); }
+        .converge-children > .branch::after { content: ''; flex-grow: 1; height: 2px; background: var(--line-color); min-width: 30px; }
+        .integration-wrapper { display: flex; flex-direction: row; align-items: center; margin-left: 30px; position: relative; }
+        .integration-wrapper::before { content: ''; position: absolute; left: -30px; top: 50%; width: 30px; height: 2px; background: var(--line-color); }
 
         .node-card {
-            width: 260px;
-            background-color: var(--bg-node);
-            flex-shrink: 0;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 18px;
+            width: 260px; background-color: var(--bg-node); flex-shrink: 0;
+            border: 1px solid var(--border-color); border-radius: 10px; padding: 18px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            position: relative;
-            z-index: 2;
-            transition: border-color 0.15s, box-shadow 0.15s;
+            position: relative; z-index: 2; transition: border-color 0.15s, box-shadow 0.15s;
         }
-        .node-card:hover {
-            border-color: #cbd5e1;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
-        }
-        .node-card.type-integration {
-            background-color: var(--bg-integration);
-            border-color: var(--bg-integration);
-            color: white;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
+        .node-card:hover { border-color: #cbd5e1; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025); }
+        .node-card.type-integration { background-color: var(--bg-integration); border-color: var(--bg-integration); color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
 
-        .node-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #f1f5f9;
-        }
-        .type-integration .node-header {
-            border-bottom-color: #334155;
-        }
+        .node-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9; }
+        .type-integration .node-header { border-bottom-color: #334155; }
         
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex: 1;
-        }
-        .node-checkbox {
-            width: 14px;
-            height: 14px;
-            cursor: pointer;
-            accent-color: var(--accent);
-            margin: 0;
-        }
-        .category-select, .custom-category {
-            border: none;
-            background: transparent;
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text-sub);
-            outline: none;
-            font-family: inherit;
-            width: 80%;
-            cursor: pointer;
-        }
-        .custom-category {
-            border-bottom: 1px dashed var(--line-color);
-            padding-bottom: 2px;
-            cursor: text;
-        }
-        .type-integration .category-label {
-            color: #e2e8f0;
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: -0.2px;
-        }
+        .header-left { display: flex; align-items: center; gap: 8px; flex: 1; }
+        .node-checkbox { width: 14px; height: 14px; cursor: pointer; accent-color: var(--accent); margin: 0; }
+        .category-select, .custom-category { border: none; background: transparent; font-size: 13px; font-weight: 700; color: var(--text-sub); outline: none; font-family: inherit; width: 80%; cursor: pointer; }
+        .custom-category { border-bottom: 1px dashed var(--line-color); padding-bottom: 2px; cursor: text; }
+        .type-integration .category-label { color: #e2e8f0; font-size: 13px; font-weight: 700; }
 
-        .header-controls {
-            display: flex;
-            gap: 2px;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        .node-card:hover .header-controls {
-            opacity: 1;
-        }
-        .btn-ctrl {
-            background: none;
-            border: none;
-            font-size: 12px;
-            cursor: pointer;
-            padding: 4px;
-            color: var(--text-sub);
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.15s;
-        }
-        .btn-ctrl:hover {
-            background: #f1f5f9;
-            color: var(--text-main);
-        }
-        .btn-delete {
-            color: #ef4444;
-        }
-        .btn-delete:hover {
-            background: #fee2e2;
-            color: #dc2626;
-        }
+        .header-controls { display: flex; gap: 2px; opacity: 0; transition: opacity 0.2s; }
+        .node-card:hover .header-controls { opacity: 1; }
+        .btn-ctrl { background: none; border: none; font-size: 12px; cursor: pointer; padding: 4px; color: var(--text-sub); border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+        .btn-ctrl:hover { background: #f1f5f9; color: var(--text-main); }
+        .btn-delete { color: #ef4444; }
+        .btn-delete:hover { background: #fee2e2; color: #dc2626; }
 
-        .node-content {
-            min-height: 48px;
-            outline: none;
-            font-size: 14px;
-            line-height: 1.6;
-            word-break: break-word;
-            color: #334155;
-        }
-        .node-content:empty:before {
-            content: attr(data-placeholder);
-            color: #94a3b8;
-            pointer-events: none;
-        }
-        .type-integration .node-content {
-            color: #f8fafc;
-        }
-        .type-integration .node-content:empty:before {
-            color: #64748b;
-        }
+        .node-content { min-height: 48px; outline: none; font-size: 14px; line-height: 1.6; word-break: break-word; color: #334155; }
+        .node-content:empty:before { content: attr(data-placeholder); color: #94a3b8; pointer-events: none; }
+        .type-integration .node-content { color: #f8fafc; }
+        .type-integration .node-content:empty:before { color: #64748b; }
 
-        .action-group {
-            margin-top: 16px;
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-        .btn-add-child {
-            flex: 1;
-            background: #f8fafc;
-            border: 1px solid var(--border-color);
-            color: #475569;
-            font-size: 12px;
-            font-weight: 600;
-            padding: 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-        .btn-add-child:hover {
-            background: #f1f5f9;
-            color: #0f172a;
-            border-color: #cbd5e1;
-        }
+        .action-group { margin-top: 16px; display: flex; gap: 6px; flex-wrap: wrap; }
+        .btn-add-child { flex: 1; background: #f8fafc; border: 1px solid var(--border-color); color: #475569; font-size: 12px; font-weight: 600; padding: 8px; border-radius: 6px; cursor: pointer; transition: all 0.15s; }
+        .btn-add-child:hover { background: #f1f5f9; color: #0f172a; border-color: #cbd5e1; }
         
-        .btn-integrate {
-            display: none;
-            width: 100%;
-            background: var(--accent);
-            color: white;
-            border: none;
-            font-size: 12px;
-            font-weight: 600;
-            padding: 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-        .btn-integrate:hover {
-            background: #4338ca;
-        }
-
+        .btn-integrate { display: none; width: 100%; background: var(--accent); color: white; border: none; font-size: 12px; font-weight: 600; padding: 8px; border-radius: 6px; cursor: pointer; transition: all 0.15s; }
+        .btn-integrate:hover { background: #4338ca; }
+        
         body.exporting .hide-on-export { display: none !important; }
-        body.exporting .node-header { border-bottom-color: transparent; padding-bottom: 4px; }
         body.exporting .action-group { display: none !important; }
-        body.exporting .node-card { border-color: transparent; box-shadow: none; background-color: transparent; }
-        body.exporting .type-integration { background-color: var(--bg-integration); border-color: var(--bg-integration); border-radius: 10px; }
     </style>
 </head>
 <body>
 
     <div class="toolbar hide-on-export">
-        <h1>브레인라이팅 마인드맵</h1>
+        <h1>브레인라이팅 캔버스</h1>
         <button class="btn" onclick="addRoot()">+ 새 주제 추가</button>
         <div style="flex:1;"></div>
         <button class="btn" onclick="changeZoom(-0.1)">- 축소</button>
@@ -571,6 +303,38 @@
             canvas.style.transform = `scale(1)`;
             canvas.style.transition = 'none';
 
+            const selects = document.querySelectorAll('.category-select');
+            selects.forEach(sel => {
+                if (sel.style.display !== 'none') {
+                    const span = document.createElement('span');
+                    span.className = 'temp-export-label';
+                    span.style.fontSize = '13px';
+                    span.style.fontWeight = '700';
+                    span.style.color = '#64748b';
+                    span.innerText = sel.options[sel.selectedIndex].text;
+                    sel.parentNode.insertBefore(span, sel);
+                    sel.dataset.exportHidden = 'true';
+                    sel.style.display = 'none';
+                }
+            });
+
+            const inputs = document.querySelectorAll('.custom-category');
+            inputs.forEach(input => {
+                if (input.style.display !== 'none') {
+                    const span = document.createElement('span');
+                    span.className = 'temp-export-label';
+                    span.style.fontSize = '13px';
+                    span.style.fontWeight = '700';
+                    span.style.color = '#64748b';
+                    span.innerText = input.value || input.placeholder;
+                    span.style.borderBottom = '1px dashed #94a3b8';
+                    span.style.paddingBottom = '2px';
+                    input.parentNode.insertBefore(span, input);
+                    input.dataset.exportHidden = 'true';
+                    input.style.display = 'none';
+                }
+            });
+
             setTimeout(() => {
                 html2canvas(canvas, { scale: 2, backgroundColor: "#f4f5f8", logging: false }).then(rendered => {
                     const link = document.createElement('a');
@@ -578,9 +342,17 @@
                     link.href = rendered.toDataURL("image/png");
                     link.click();
                     
+                    // 줌 복구
                     currentZoom = originalZoom;
                     canvas.style.transform = `scale(${currentZoom})`;
                     canvas.style.transition = 'transform 0.1s';
+            
+                    document.querySelectorAll('.temp-export-label').forEach(span => span.remove());
+                    document.querySelectorAll('[data-export-hidden="true"]').forEach(el => {
+                        el.style.display = el.tagName === 'SELECT' ? 'inline-block' : 'inline-block';
+                        el.removeAttribute('data-export-hidden');
+                    });
+                    
                     document.body.classList.remove('exporting');
                 });
             }, 150);
